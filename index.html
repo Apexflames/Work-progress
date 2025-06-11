@@ -1052,7 +1052,23 @@ body {
         };
 
         // On load, set archive section and date picker
-        updateArchiveDatePicker();
+        function archiveSection(section, periodKey) {
+    if (!todos[section] || todos[section].length === 0) return;
+    // Load existing archive for this period
+    let existing = getArchive(section, periodKey);
+    // Merge: add only new tasks that are not already in the archive (by text+deadline+time)
+    let merged = existing.slice();
+    todos[section].forEach(todo => {
+        // Check for duplicate by text, deadline, and time (for routine)
+        let isDuplicate = existing.some(archived =>
+            archived.text === todo.text &&
+            archived.deadline === todo.deadline &&
+            (section !== 'routine' || archived.time === todo.time)
+        );
+        if (!isDuplicate) merged.push(todo);
+    });
+    localStorage.setItem(`archive_${section}_${periodKey}`, JSON.stringify(merged));
+}
 
     </script>
 </body>
