@@ -33,6 +33,10 @@
             font-weight: 600;
             box-shadow: 0 2px 8px rgba(0,0,0,0.04);
             position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
         .top-bar {
             display: flex;
@@ -42,6 +46,8 @@
             background: var(--bg);
             padding: 0.5rem 0.5rem 0.5rem 0.5rem;
             border-bottom: 1px solid var(--border);
+            border-radius: 50px;
+            width: 30rem;
         }
         .top-bar input[type="date"] {
             padding: 0.3rem 0.5rem;
@@ -86,8 +92,8 @@
             border-radius: 1rem;
             box-shadow: 0 1px 4px rgba(0,0,0,0.03);
             flex: 1 1 320px;
-            min-width: 250px;
-            max-width: 350px;
+            min-width: 320px;
+            max-width: 400px;
             display: flex;
             flex-direction: column;
             padding: 1.5rem;
@@ -337,40 +343,38 @@
             background: var(--border);
             border-radius: 4px;
         }
-        .my-message{
-            font-size: 24px;
-        }
+    .my-message{
+        font-size: 24px;
+    }
 
-@media (max-width: 900px) {
     html, body {
         width: 100vw;
-        overflow-x: hidden;
-    }
-    main {
-        flex-direction: column;
-        align-items: center;
-        gap: 1.5rem;
         max-width: 100vw;
-        width: 100vw;
-        margin: 0;
-        padding: 2rem 0.5rem;
+        overflow-x: hidden;
         box-sizing: border-box;
     }
-    .todo-section {
-        max-width: 100%;
-        min-width: 0;
-        width: 100%;
-        margin: 0 auto;
-        box-sizing: border-box;
+
+    @media (max-width: 900px) {
+        main {
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+            max-width: 100vw;
+            width: 100vw;
+            margin: 0;
+            padding: 2rem 0.5rem;
+            box-sizing: border-box;
+        }
+        .todo-section {
+            max-width: 100%;
+            min-width: 0;
+            width: 100%;
+            margin: 0 auto;
+            box-sizing: border-box;
+        }
     }
-}
 
-/* Extra: Prevent horizontal scroll on body for all screens */
-body {
-    overflow-x: hidden;
-}
-
-    </style>
+</style>
 </head>
 <body>
     <header>
@@ -764,14 +768,20 @@ body {
 
         // --- ADDITION: Routine time due logic ---
         function isRoutineDue(todo) {
-            if (!todo.time) return false;
-            // Only check for today, and only if not completed
-            const now = new Date();
-            const [h, m] = todo.time.split(':');
-            if (h === undefined || m === undefined) return false;
-            const due = new Date(now.getFullYear(), now.getMonth(), now.getDate(), Number(h), Number(m), 0, 0);
-            return now >= due;
-        }
+    if (!todo.time) return false;
+    if (todo.completed) return false;
+    const now = new Date();
+    const [h, m] = todo.time.split(':');
+    if (h === undefined || m === undefined) return false;
+    // Today's occurrence
+    let due = new Date(now.getFullYear(), now.getMonth(), now.getDate(), Number(h), Number(m), 0, 0);
+    // If time has already passed today, set due to tomorrow
+    if (now > due) {
+        due.setDate(due.getDate() + 1);
+    }
+    // Only trigger when now >= due (i.e., at the next occurrence)
+    return now >= due;
+}
         // --- END ADDITION ---
 
         // Alarm Modal helpers
@@ -1069,6 +1079,7 @@ body {
     });
     localStorage.setItem(`archive_${section}_${periodKey}`, JSON.stringify(merged));
 }
+
 
     </script>
 </body>
