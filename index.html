@@ -2,77 +2,127 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <title>Personal To-Do Manager</title>
+    <title>Personal Productivity To-Do Manager</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         :root {
-            --primary: #2d6cdf;
-            --bg: #f7f9fb;
-            --card-bg: #fff;
-            --border: #e0e6ed;
-            --text: #222;
-            --muted: #888;
-            --radius: 12px;
-            --shadow: 0 2px 8px rgba(44, 62, 80, 0.07);
+            --primary: #454e5f;
+            --accent: #38b2ac;
+            --bg: #f7fafc;
+            --card: #fff;
+            --border: #e2e8f0;
+            --danger: #e53e3e;
+            --success: #38a169;
+            --text: #2d3748;
+            --muted: #718096;
         }
         body {
             background: var(--bg);
-            font-family: 'Segoe UI', Arial, sans-serif;
-            margin: 0;
             color: var(--text);
-            min-height: 100vh;
+            font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
         }
         header {
+            background: var(--primary);
+            color: #fff;
+            padding: 1.5rem 0;
             text-align: center;
-            padding: 2rem 1rem 1rem 1rem;
-        }
-        header h1 {
-            margin: 0 0 0.5rem 0;
-            font-size: 2.2rem;
             letter-spacing: 1px;
+            font-size: 2rem;
             font-weight: 600;
-        }
-        header p {
-            color: var(--muted);
-            margin: 0;
-            font-size: 1.1rem;
-        }
-        .container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 2rem;
-            max-width: 1200px;
-            margin: 2rem auto;
-            padding: 0 1rem 2rem 1rem;
-        }
-        .todo-card {
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            padding: 2rem 1.5rem 1.5rem 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            position: relative;
             display: flex;
             flex-direction: column;
+            justify-content: center;
             align-items: center;
+        }
+        .top-bar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            background: var(--bg);
+            width: 30rem;
+            padding: 0.5rem 0.5rem 0.5rem 0.5rem;
+            border-bottom: 1px solid var(--border);
+            border-radius: 2rem;
+        }
+        .top-bar input[type="date"] {
+            padding: 0.3rem 0.5rem;
             border: 1px solid var(--border);
-            min-width: 0;
+            border-radius: 0.4rem;
+            font-size: 1rem;
+            background: var(--card);
         }
-        .todo-card h2 {
-            margin: 0 0 1.2rem 0;
-            font-size: 1.3rem;
+        .top-bar select {
+            padding: 0.3rem 0.5rem;
+            border: 1px solid var(--border);
+            border-radius: 0.4rem;
+            font-size: 1rem;
+            background: var(--card);
+        }
+        .top-bar button {
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            border-radius: 0.4rem;
+            padding: 0.3rem 0.9rem;
+            font-size: 1rem;
             font-weight: 500;
-            letter-spacing: 0.5px;
-            color: var(--primary);
+            cursor: pointer;
+            transition: background 0.2s;
         }
-        .progress-ring {
-            margin-bottom: 1.2rem;
+        .top-bar button:hover {
+            background: var(--success);
+        }
+        main {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 2rem;
+            padding: 2rem 1rem;
+            max-width: 1200px;
+            margin: auto;
+        }
+        .todo-section {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+            flex: 1 1 320px;
+            min-width: 320px;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem;
             position: relative;
-            width: 90px;
-            height: 90px;
+        }
+        .section-header {
             display: flex;
             align-items: center;
-            justify-content: center;
+            gap: 1.5rem; /* Increased gap for bigger progress ring */
+            margin-bottom: 1.5rem;
+        }
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 500;
+            flex: 1;
+            color: var(--primary);
+            letter-spacing: 0.5px;
+        }
+        /* --- MODIFIED: Make progress ring bigger --- */
+        .progress-ring {
+            width: 80px;
+            height: 80px;
+            position: relative;
+            display: inline-block;
+            flex-shrink: 0;
         }
         .progress-ring svg {
+            width: 80px;
+            height: 80px;
             transform: rotate(-90deg);
         }
         .progress-ring-text {
@@ -80,272 +130,906 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--primary);
-            letter-spacing: 0.5px;
-            user-select: none;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--accent);
+            pointer-events: none;
         }
-        .todo-input-row {
-            display: flex;
-            width: 100%;
-            margin-bottom: 1.2rem;
-            gap: 0.5rem;
-        }
-        .todo-input-row input[type="text"] {
-            flex: 1;
-            padding: 0.5rem 0.8rem;
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            font-size: 1rem;
-            background: #f9fafb;
-            outline: none;
-            transition: border 0.2s;
-        }
-        .todo-input-row input[type="text"]:focus {
-            border-color: var(--primary);
-        }
-        .todo-input-row button {
-            background: var(--primary);
-            color: #fff;
-            border: none;
-            border-radius: var(--radius);
-            padding: 0 1.1rem;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .todo-input-row button:hover {
-            background: #1b4fa0;
-        }
-        ul.todo-list {
+        /* --- END MODIFIED --- */
+        .todo-list {
             list-style: none;
             padding: 0;
-            margin: 0;
-            width: 100%;
+            margin: 0 0 1rem 0;
+            flex: 1;
+            overflow-y: auto;
+            max-height: 320px;
         }
-        ul.todo-list li {
+        .todo-item {
             display: flex;
             align-items: center;
+            gap: 0.5rem;
             padding: 0.5rem 0;
             border-bottom: 1px solid var(--border);
-            font-size: 1rem;
+            position: relative;
             transition: background 0.2s;
         }
-        ul.todo-list li:last-child {
+        .todo-item:last-child {
             border-bottom: none;
         }
-        .todo-checkbox {
-            margin-right: 0.8rem;
-            accent-color: var(--primary);
-            width: 1.1em;
-            height: 1.1em;
-        }
-        .todo-text {
-            flex: 1;
-            word-break: break-word;
-            transition: color 0.2s;
-        }
-        .todo-completed .todo-text {
-            color: var(--muted);
+        .todo-item.completed label {
             text-decoration: line-through;
+            color: var(--muted);
         }
-        .remove-btn {
-            background: none;
+        .todo-item .deadline {
+            margin-left: auto;
+            font-size: 0.85rem;
+            color: var(--muted);
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        .todo-item .alert {
+            margin-left: 0.5rem;
+            color: var(--danger);
+            font-weight: bold;
+            animation: blink 1s steps(2, start) infinite;
+        }
+        @keyframes blink {
+            to { visibility: hidden; }
+        }
+        .add-todo-form {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+        .add-todo-form input[type="text"] {
+            flex: 2 1 120px;
+            padding: 0.5rem;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            background: var(--bg);
+        }
+        .add-todo-form input[type="datetime-local"] {
+            flex: 1 1 120px;
+            padding: 0.5rem;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            background: var(--bg);
+        }
+        /* --- ADDITION: Style for routine time input --- */
+        .add-todo-form input[type="time"] {
+            flex: 1 1 90px;
+            padding: 0.5rem;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            background: var(--bg);
+        }
+        /* --- END ADDITION --- */
+        .add-todo-form button {
+            background: var(--accent);
+            color: #fff;
             border: none;
-            color: #c0392b;
-            font-size: 1.1em;
-            margin-left: 0.7em;
+            border-radius: 0.5rem;
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+            font-weight: 500;
             cursor: pointer;
-            opacity: 0.7;
-            transition: opacity 0.2s;
+            transition: background 0.2s;
         }
-        .remove-btn:hover {
+        .add-todo-form button:hover {
+            background: var(--success);
+        }
+        .toast {
+            position: fixed;
+            left: 50%;
+            top: 2.5rem;
+            transform: translateX(-50%);
+            background: var(--success);
+            color: #fff;
+            padding: 1rem 2rem;
+            border-radius: 1.5rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            box-shadow: 0 2px 12px rgba(56,161,105,0.13);
+            z-index: 1002;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        .toast.show {
             opacity: 1;
+            pointer-events: auto;
         }
-        @media (max-width: 700px) {
-            .container {
-                grid-template-columns: 1fr;
-                gap: 1.2rem;
+        .modal-backdrop {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(45,55,72,0.25);
+            z-index: 1000;
+            display: none;
+        }
+        .modal-backdrop.active {
+            display: block;
+        }
+        .modal {
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%,-50%);
+            background: var(--card);
+            border-radius: 1rem;
+            box-shadow: 0 4px 32px rgba(0,0,0,0.13);
+            padding: 2rem 1.5rem 1.5rem 1.5rem;
+            min-width: 320px;
+            max-width: 95vw;
+            z-index: 1001;
+            display: none;
+        }
+        .modal.active {
+            display: block;
+        }
+        .modal .modal-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+        .modal .modal-content {
+            margin-bottom: 1.5rem;
+        }
+        .modal .modal-actions {
+            text-align: right;
+        }
+        .modal .modal-actions button {
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.5rem 1.2rem;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .modal .modal-actions button:hover {
+            background: var(--danger);
+        }
+        .modal .archive-section-title {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--primary);
+            margin-top: 1rem;
+            margin-bottom: 0.3rem;
+        }
+        .modal .archive-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 0.5rem 0;
+        }
+        .modal .archive-list li {
+            padding: 0.3rem 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 1rem;
+            color: var(--text);
+        }
+        .modal .archive-list li:last-child {
+            border-bottom: none;
+        }
+        .modal .archive-empty {
+            color: var(--muted);
+            font-size: 0.98rem;
+            margin-bottom: 0.5rem;
+        }
+        @media (max-width: 900px) {
+            main {
+                flex-direction: column;
+                align-items: center;
+                gap: 1.5rem;
             }
-            .todo-card {
-                padding: 1.2rem 0.7rem 1rem 0.7rem;
+            .todo-section {
+                max-width: 100%;
+                min-width: 0;
+                width: 100%;
             }
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+            background: var(--bg);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+        .my-message{
+            font-size: 24px;
         }
     </style>
 </head>
 <body>
     <header>
-        <h1>Personal To-Do Manager</h1>
-        <p>Organize your tasks by timeframe and track your progress visually.</p>
+        Productivity To-Do Manager
+        <p class="my-message">Organize your tasks by timeframe and track your progress visually.</p>
+        <div class="top-bar">
+            <!-- ARCHIVE DROPDOWN ADDED -->
+            <select id="archive-section-picker" title="Select section to view archive">
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+                <option value="yearly">Yearly</option>
+                <option value="routine">Routine</option>
+            </select>
+            <select id="archive-date-picker" title="Select period to view archive">
+                <option value="">Select period</option>
+            </select>
+            <button id="archive-load-btn" title="View archived tasks for selected period">View Archive</button>
+        </div>
     </header>
-    <main class="container">
-        <section class="todo-card" data-section="daily">
-            <h2>Daily</h2>
-            <div class="progress-ring" data-progress="daily">
-                <svg width="90" height="90">
-                    <circle cx="45" cy="45" r="38" stroke="#e0e6ed" stroke-width="8" fill="none"/>
-                    <circle cx="45" cy="45" r="38" stroke="#2d6cdf" stroke-width="8" fill="none"
-                                    stroke-linecap="round" stroke-dasharray="238.76" stroke-dashoffset="238.76"/>
-                </svg>
-                <span class="progress-ring-text">0%</span>
+    <main>
+        <section class="todo-section" data-section="daily">
+            <div class="section-header">
+                <span class="section-title">Daily</span>
+                <span class="progress-ring" data-progress="daily">
+                    <!-- MODIFIED: SVG size and circle radius for bigger progress ring -->
+                    <svg width="80" height="80">
+                        <circle cx="40" cy="40" r="34" stroke="#e2e8f0" stroke-width="8" fill="none"/>
+                        <circle cx="40" cy="40" r="34" stroke="#38b2ac" stroke-width="8" fill="none"
+                            stroke-dasharray="213.63" stroke-dashoffset="213.63" stroke-linecap="round"/>
+                    </svg>
+                    <span class="progress-ring-text">0%</span>
+                </span>
             </div>
-            <form class="todo-input-row" autocomplete="off">
-                <input type="text" placeholder="Add daily task..." maxlength="80" required>
-                <button type="submit" title="Add Task">+</button>
+            <form class="add-todo-form" autocomplete="off">
+                <input type="text" placeholder="Add daily task..." required maxlength="80">
+                <input type="datetime-local" title="Optional deadline">
+                <button type="submit">Add</button>
             </form>
             <ul class="todo-list"></ul>
         </section>
-        <section class="todo-card" data-section="weekly">
-            <h2>Weekly</h2>
-            <div class="progress-ring" data-progress="weekly">
-                <svg width="90" height="90">
-                    <circle cx="45" cy="45" r="38" stroke="#e0e6ed" stroke-width="8" fill="none"/>
-                    <circle cx="45" cy="45" r="38" stroke="#2d6cdf" stroke-width="8" fill="none"
-                                    stroke-linecap="round" stroke-dasharray="238.76" stroke-dashoffset="238.76"/>
-                </svg>
-                <span class="progress-ring-text">0%</span>
+        <section class="todo-section" data-section="weekly">
+            <div class="section-header">
+                <span class="section-title">Weekly</span>
+                <span class="progress-ring" data-progress="weekly">
+                    <svg width="80" height="80">
+                        <circle cx="40" cy="40" r="34" stroke="#e2e8f0" stroke-width="8" fill="none"/>
+                        <circle cx="40" cy="40" r="34" stroke="#38b2ac" stroke-width="8" fill="none"
+                            stroke-dasharray="213.63" stroke-dashoffset="213.63" stroke-linecap="round"/>
+                    </svg>
+                    <span class="progress-ring-text">0%</span>
+                </span>
             </div>
-            <form class="todo-input-row" autocomplete="off">
-                <input type="text" placeholder="Add weekly task..." maxlength="80" required>
-                <button type="submit" title="Add Task">+</button>
+            <form class="add-todo-form" autocomplete="off">
+                <input type="text" placeholder="Add weekly task..." required maxlength="80">
+                <input type="datetime-local" title="Optional deadline">
+                <button type="submit">Add</button>
             </form>
             <ul class="todo-list"></ul>
         </section>
-        <section class="todo-card" data-section="monthly">
-            <h2>Monthly</h2>
-            <div class="progress-ring" data-progress="monthly">
-                <svg width="90" height="90">
-                    <circle cx="45" cy="45" r="38" stroke="#e0e6ed" stroke-width="8" fill="none"/>
-                    <circle cx="45" cy="45" r="38" stroke="#2d6cdf" stroke-width="8" fill="none"
-                                    stroke-linecap="round" stroke-dasharray="238.76" stroke-dashoffset="238.76"/>
-                </svg>
-                <span class="progress-ring-text">0%</span>
+        <section class="todo-section" data-section="monthly">
+            <div class="section-header">
+                <span class="section-title">Monthly</span>
+                <span class="progress-ring" data-progress="monthly">
+                    <svg width="80" height="80">
+                        <circle cx="40" cy="40" r="34" stroke="#e2e8f0" stroke-width="8" fill="none"/>
+                        <circle cx="40" cy="40" r="34" stroke="#38b2ac" stroke-width="8" fill="none"
+                            stroke-dasharray="213.63" stroke-dashoffset="213.63" stroke-linecap="round"/>
+                    </svg>
+                    <span class="progress-ring-text">0%</span>
+                </span>
             </div>
-            <form class="todo-input-row" autocomplete="off">
-                <input type="text" placeholder="Add monthly task..." maxlength="80" required>
-                <button type="submit" title="Add Task">+</button>
+            <form class="add-todo-form" autocomplete="off">
+                <input type="text" placeholder="Add monthly task..." required maxlength="80">
+                <input type="datetime-local" title="Optional deadline">
+                <button type="submit">Add</button>
             </form>
             <ul class="todo-list"></ul>
         </section>
-        <section class="todo-card" data-section="yearly">
-            <h2>Yearly</h2>
-            <div class="progress-ring" data-progress="yearly">
-                <svg width="90" height="90">
-                    <circle cx="45" cy="45" r="38" stroke="#e0e6ed" stroke-width="8" fill="none"/>
-                    <circle cx="45" cy="45" r="38" stroke="#2d6cdf" stroke-width="8" fill="none"
-                                    stroke-linecap="round" stroke-dasharray="238.76" stroke-dashoffset="238.76"/>
-                </svg>
-                <span class="progress-ring-text">0%</span>
+        <section class="todo-section" data-section="yearly">
+            <div class="section-header">
+                <span class="section-title">Yearly</span>
+                <span class="progress-ring" data-progress="yearly">
+                    <svg width="80" height="80">
+                        <circle cx="40" cy="40" r="34" stroke="#e2e8f0" stroke-width="8" fill="none"/>
+                        <circle cx="40" cy="40" r="34" stroke="#38b2ac" stroke-width="8" fill="none"
+                            stroke-dasharray="213.63" stroke-dashoffset="213.63" stroke-linecap="round"/>
+                    </svg>
+                    <span class="progress-ring-text">0%</span>
+                </span>
             </div>
-            <form class="todo-input-row" autocomplete="off">
-                <input type="text" placeholder="Add yearly task..." maxlength="80" required>
-                <button type="submit" title="Add Task">+</button>
+            <form class="add-todo-form" autocomplete="off">
+                <input type="text" placeholder="Add yearly task..." required maxlength="80">
+                <input type="datetime-local" title="Optional deadline">
+                <button type="submit">Add</button>
+            </form>
+            <ul class="todo-list"></ul>
+        </section>
+        <!-- Routine Section -->
+        <section class="todo-section" data-section="routine">
+            <div class="section-header">
+                <span class="section-title">Routine</span>
+                <span class="progress-ring" data-progress="routine">
+                    <svg width="80" height="80">
+                        <circle cx="40" cy="40" r="34" stroke="#e2e8f0" stroke-width="8" fill="none"/>
+                        <circle cx="40" cy="40" r="34" stroke="#38b2ac" stroke-width="8" fill="none"
+                            stroke-dasharray="213.63" stroke-dashoffset="213.63" stroke-linecap="round"/>
+                    </svg>
+                    <span class="progress-ring-text">0%</span>
+                </span>
+            </div>
+            <form class="add-todo-form" autocomplete="off">
+                <input type="text" placeholder="Add routine task..." required maxlength="80">
+                <!-- ADDITION: Routine time input -->
+                <input type="time" title="Routine time" step="60">
+                <!-- END ADDITION -->
+                <input type="datetime-local" title="Optional deadline">
+                <button type="submit">Add</button>
             </form>
             <ul class="todo-list"></ul>
         </section>
     </main>
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+    <!-- Alarm Modal -->
+    <div class="modal-backdrop" id="alarm-modal-backdrop"></div>
+    <div class="modal" id="alarm-modal" role="dialog" aria-modal="true" aria-labelledby="alarm-modal-title">
+        <div class="modal-title" id="alarm-modal-title">⏰ Task Deadline Reached!</div>
+        <div class="modal-content" id="alarm-modal-content"></div>
+        <div class="modal-actions">
+            <button id="alarm-modal-stop-btn">Stop Alarm</button>
+        </div>
+    </div>
+    <!-- Archive Modal -->
+    <div class="modal-backdrop" id="archive-modal-backdrop"></div>
+    <div class="modal" id="archive-modal" role="dialog" aria-modal="true" aria-labelledby="archive-modal-title">
+        <div class="modal-title" id="archive-modal-title">Archived Tasks</div>
+        <div class="modal-content" id="archive-modal-content"></div>
+        <div class="modal-actions">
+            <button id="archive-modal-close-btn">Close</button>
+        </div>
+    </div>
+    <!-- Alarm Sound -->
+    <audio id="notify-sound" src="Notification.mp3" preload="auto" loop></audio>
     <script>
-        // Utility for each section
-        const sections = ['daily', 'weekly', 'monthly', 'yearly'];
-        const STORAGE_KEY = 'todo_manager_v1';
+        // Utility functions
+        function formatDeadline(dtStr) {
+            if (!dtStr) return '';
+            const dt = new Date(dtStr);
+            if (isNaN(dt)) return '';
+            return dt.toLocaleString([], { dateStyle: 'short', timeStyle: 'short' });
+        }
 
-        // Load/save from localStorage
-        function loadTodos() {
-            try {
-                return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
-            } catch {
-                return {};
+        // --- ADDITION: Utility for formatting routine time ---
+        function formatRoutineTime(timeStr) {
+            if (!timeStr) return '';
+            // HH:mm
+            const [h, m] = timeStr.split(':');
+            if (h === undefined || m === undefined) return '';
+            const date = new Date();
+            date.setHours(Number(h), Number(m), 0, 0);
+            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+        // --- END ADDITION ---
+
+        // Period key helpers
+        function getPeriodKey(section, date) {
+            const d = new Date(date);
+            if (section === 'daily') {
+                // YYYY-MM-DD
+                return d.toISOString().split('T')[0];
+            } else if (section === 'weekly') {
+                // Monday of the week
+                const day = d.getDay();
+                const diff = d.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
+                const monday = new Date(d);
+                monday.setDate(diff);
+                return monday.toISOString().split('T')[0];
+            } else if (section === 'monthly') {
+                // YYYY-MM
+                return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+            } else if (section === 'yearly') {
+                // YYYY
+                return d.getFullYear().toString();
             }
-        }
-        function saveTodos(data) {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            return '';
         }
 
-        // Initialize state
-        let todos = loadTodos();
-        for (const section of sections) {
-            if (!todos[section]) todos[section] = [];
+        // State
+        const sections = ['daily', 'weekly', 'monthly', 'yearly', 'routine'];
+        const todos = {
+            daily: [],
+            weekly: [],
+            monthly: [],
+            yearly: [],
+            routine: []
+        };
+        // Current period keys for each section (except routine)
+        let currentPeriods = {};
+        function loadPeriods() {
+            const data = localStorage.getItem('currentPeriods');
+            if (data) {
+                try {
+                    currentPeriods = JSON.parse(data);
+                } catch {}
+            }
+            // Ensure all keys exist
+            ['daily','weekly','monthly','yearly'].forEach(sec => {
+                if (!currentPeriods[sec]) {
+                    currentPeriods[sec] = getPeriodKey(sec, new Date());
+                }
+            });
+        }
+        function savePeriods() {
+            localStorage.setItem('currentPeriods', JSON.stringify(currentPeriods));
         }
 
-        // Render all sections
+        // Load from localStorage if available
+        function loadTodos() {
+            sections.forEach(sec => {
+                const data = localStorage.getItem('todos_' + sec);
+                if (data) {
+                    try {
+                        todos[sec] = JSON.parse(data);
+                    } catch {}
+                }
+            });
+        }
+        function saveTodos() {
+            sections.forEach(sec => {
+                localStorage.setItem('todos_' + sec, JSON.stringify(todos[sec]));
+            });
+        }
+
+        // Archive helpers
+        function archiveSection(section, periodKey) {
+            if (!todos[section] || todos[section].length === 0) return;
+            localStorage.setItem(`archive_${section}_${periodKey}`, JSON.stringify(todos[section]));
+        }
+        function getArchive(section, periodKey) {
+            const data = localStorage.getItem(`archive_${section}_${periodKey}`);
+            if (data) {
+                try {
+                    return JSON.parse(data);
+                } catch {}
+            }
+            return [];
+        }
+
+        // --- ARCHIVE PERIODS ENUMERATION ---
+        function getAllArchivePeriods(section) {
+            // Returns an array of all period keys for which there is an archive for the section
+            const keys = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const k = localStorage.key(i);
+                if (k.startsWith(`archive_${section}_`)) {
+                    keys.push(k.replace(`archive_${section}_`, ''));
+                }
+            }
+            // Sort descending (most recent first)
+            if (section === 'daily') {
+                keys.sort((a, b) => b.localeCompare(a));
+            } else if (section === 'weekly' || section === 'monthly') {
+                keys.sort((a, b) => b.localeCompare(a));
+            } else if (section === 'yearly') {
+                keys.sort((a, b) => b.localeCompare(a));
+            } else {
+                // routine: sort by string
+                keys.sort((a, b) => b.localeCompare(a));
+            }
+            return keys;
+        }
+        // --- END ARCHIVE PERIODS ENUMERATION ---
+
+        // Render functions
         function renderSection(section) {
-            const card = document.querySelector(`.todo-card[data-section="${section}"]`);
-            const list = card.querySelector('.todo-list');
-            list.innerHTML = '';
-            todos[section].forEach((item, idx) => {
+            const ul = document.querySelector(`.todo-section[data-section="${section}"] .todo-list`);
+            ul.innerHTML = '';
+            todos[section].forEach((todo, idx) => {
                 const li = document.createElement('li');
-                li.className = item.completed ? 'todo-completed' : '';
+                li.className = 'todo-item' + (todo.completed ? ' completed' : '');
                 // Checkbox
                 const checkbox = document.createElement('input');
                 checkbox.type = 'checkbox';
-                checkbox.className = 'todo-checkbox';
-                checkbox.checked = !!item.completed;
+                checkbox.checked = !!todo.completed;
                 checkbox.addEventListener('change', () => {
-                    item.completed = checkbox.checked;
-                    saveTodos(todos);
+                    todo.completed = checkbox.checked;
+                    saveTodos();
                     renderSection(section);
+                    updateProgress(section);
                 });
-                // Text
-                const span = document.createElement('span');
-                span.className = 'todo-text';
-                span.textContent = item.text;
+                // Label
+                const label = document.createElement('label');
+                label.textContent = todo.text;
+                // Deadline
+                let deadlineSpan = null;
+                if (todo.deadline) {
+                    deadlineSpan = document.createElement('span');
+                    deadlineSpan.className = 'deadline';
+                    deadlineSpan.innerHTML = `<svg width="14" height="14" style="vertical-align:middle" fill="none" stroke="#718096" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> ${formatDeadline(todo.deadline)}`;
+                    // Alert if due or missed
+                    if (!todo.completed && isDue(todo.deadline)) {
+                        deadlineSpan.innerHTML += `<span class="alert" title="Task due!">⚠</span>`;
+                    }
+                }
+                // --- ADDITION: Routine time display and alert ---
+                let timeSpan = null;
+                if (section === 'routine' && todo.time) {
+                    timeSpan = document.createElement('span');
+                    timeSpan.className = 'deadline';
+                    timeSpan.innerHTML = `<svg width="14" height="14" style="vertical-align:middle" fill="none" stroke="#718096" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> ${formatRoutineTime(todo.time)}`;
+                    // Alert if overdue
+                    if (!todo.completed && isRoutineDue(todo)) {
+                        timeSpan.innerHTML += `<span class="alert" title="Routine time reached!">⚠</span>`;
+                    }
+                }
+                // --- END ADDITION ---
                 // Remove button
                 const removeBtn = document.createElement('button');
-                removeBtn.className = 'remove-btn';
+                removeBtn.textContent = '✕';
                 removeBtn.title = 'Remove task';
-                removeBtn.innerHTML = '&times;';
+                removeBtn.style.background = 'none';
+                removeBtn.style.border = 'none';
+                removeBtn.style.color = 'var(--muted)';
+                removeBtn.style.fontSize = '1.1rem';
+                removeBtn.style.cursor = 'pointer';
+                removeBtn.style.marginLeft = '0.5rem';
                 removeBtn.addEventListener('click', () => {
                     todos[section].splice(idx, 1);
-                    saveTodos(todos);
+                    saveTodos();
                     renderSection(section);
+                    updateProgress(section);
                 });
                 li.appendChild(checkbox);
-                li.appendChild(span);
+                li.appendChild(label);
+                // --- ADDITION: Insert routine time span if present ---
+                if (section === 'routine' && timeSpan) li.appendChild(timeSpan);
+                // --- END ADDITION ---
+                if (deadlineSpan) li.appendChild(deadlineSpan);
                 li.appendChild(removeBtn);
-                list.appendChild(li);
+                ul.appendChild(li);
             });
-            updateProgress(section);
         }
 
-        // Update donut progress
+        // Toast helpers
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2500);
+        }
+
         function updateProgress(section) {
             const items = todos[section];
             const total = items.length;
             const completed = items.filter(t => t.completed).length;
             const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
+            // Update donut
             const ring = document.querySelector(`.progress-ring[data-progress="${section}"]`);
-            const circle = ring.querySelectorAll('circle')[1];
+            const circle = ring.querySelector('svg circle:nth-child(2)');
             const text = ring.querySelector('.progress-ring-text');
-            const radius = 38;
+            // MODIFIED: Use new radius and circumference for bigger ring
+            const radius = 34;
             const circumference = 2 * Math.PI * radius;
             const offset = circumference - (percent / 100) * circumference;
-            circle.style.strokeDashoffset = offset;
+            circle.setAttribute('stroke-dashoffset', offset);
             text.textContent = percent + '%';
+
+            // Toast and archive on 100% completion
+            if (percent === 100 && total > 0) {
+                showToast('🎉 Well done! All ' + section.charAt(0).toUpperCase() + section.slice(1) + ' tasks completed!');
+                if (section === 'daily') {
+                    // Archive and clear
+                    archiveSection('daily', currentPeriods['daily']);
+                    todos['daily'] = [];
+                    saveTodos();
+                    renderSection('daily');
+                    updateProgress('daily');
+                }
+            }
         }
 
-        // Add task handler
-        function setupAddTask(section) {
-            const card = document.querySelector(`.todo-card[data-section="${section}"]`);
-            const form = card.querySelector('form');
-            const input = form.querySelector('input[type="text"]');
+        function isDue(deadline) {
+            if (!deadline) return false;
+            const now = new Date();
+            const due = new Date(deadline);
+            return now >= due;
+        }
+
+        // --- ADDITION: Routine time due logic ---
+        function isRoutineDue(todo) {
+            if (!todo.time) return false;
+            // Only check for today, and only if not completed
+            const now = new Date();
+            const [h, m] = todo.time.split(':');
+            if (h === undefined || m === undefined) return false;
+            const due = new Date(now.getFullYear(), now.getMonth(), now.getDate(), Number(h), Number(m), 0, 0);
+            return now >= due;
+        }
+        // --- END ADDITION ---
+
+        // Alarm Modal helpers
+        let activeAlarms = [];
+        function showAlarmModal() {
+            const modal = document.getElementById('alarm-modal');
+            const backdrop = document.getElementById('alarm-modal-backdrop');
+            const content = document.getElementById('alarm-modal-content');
+            if (activeAlarms.length === 0) {
+                modal.classList.remove('active');
+                backdrop.classList.remove('active');
+                return;
+            }
+            let html = '<ul style="padding-left:1.2em;">';
+            activeAlarms.forEach(alarm => {
+                html += `<li><b>${alarm.section.charAt(0).toUpperCase() + alarm.section.slice(1)}</b>: ${alarm.todo.text}`;
+                // --- ADDITION: Show time for routine ---
+                if (alarm.section === 'routine' && alarm.todo.time) {
+                    html += ` <span style="color:var(--muted);font-size:0.95em;">(${formatRoutineTime(alarm.todo.time)})</span>`;
+                }
+                // --- END ADDITION ---
+                else if (alarm.todo.deadline) {
+                    html += ` <span style="color:var(--muted);font-size:0.95em;">(${formatDeadline(alarm.todo.deadline)})</span>`;
+                }
+                html += `</li>`;
+            });
+            html += '</ul>';
+            content.innerHTML = html;
+            modal.classList.add('active');
+            backdrop.classList.add('active');
+        }
+        function stopAlarm() {
+            const audio = document.getElementById('notify-sound');
+            audio.pause();
+            audio.currentTime = 0;
+            activeAlarms = [];
+            showAlarmModal();
+        }
+        document.getElementById('alarm-modal-stop-btn').onclick = stopAlarm;
+        document.getElementById('alarm-modal-backdrop').onclick = stopAlarm;
+
+        // Notification
+        function notify(section, idx) {
+            // Play sound
+            const audio = document.getElementById('notify-sound');
+            audio.currentTime = 0;
+            audio.play();
+            // Add to active alarms
+            const todo = todos[section][idx];
+            // Prevent duplicates
+            if (!activeAlarms.some(a => a.section === section && a.idx === idx)) {
+                activeAlarms.push({ section, idx, todo });
+            }
+            showAlarmModal();
+        }
+
+        // --- ADDITION: Routine alarm logic ---
+        let routineAlarmIntervalStarted = false;
+        function startRoutineAlarmInterval() {
+            if (routineAlarmIntervalStarted) return;
+            routineAlarmIntervalStarted = true;
+            setInterval(() => {
+                todos['routine'].forEach((todo, idx) => {
+                    if (!todo.completed && todo.time && isRoutineDue(todo) && !todo.notified) {
+                        todo.notified = true;
+                        saveTodos();
+                        renderSection('routine');
+                        notify('routine', idx);
+                    }
+                });
+            }, 10000);
+        }
+        // --- END ADDITION ---
+
+        // Check deadlines every 10 seconds
+        setInterval(() => {
+            sections.forEach(section => {
+                // --- MODIFICATION: Skip routine for deadline alarm logic ---
+                if (section === 'routine') return;
+                todos[section].forEach((todo, idx) => {
+                    if (!todo.completed && todo.deadline && isDue(todo.deadline) && !todo.notified) {
+                        // Mark as notified to avoid repeat
+                        todo.notified = true;
+                        saveTodos();
+                        renderSection(section);
+                        notify(section, idx);
+                    }
+                });
+            });
+        }, 10000);
+
+        // Initial render
+        function renderAll() {
+            sections.forEach(section => {
+                renderSection(section);
+                updateProgress(section);
+            });
+        }
+
+        // Add todo handlers
+        document.querySelectorAll('.todo-section').forEach(sectionEl => {
+            const section = sectionEl.getAttribute('data-section');
+            const form = sectionEl.querySelector('.add-todo-form');
             form.addEventListener('submit', e => {
                 e.preventDefault();
-                const value = input.value.trim();
-                if (value) {
-                    todos[section].push({ text: value, completed: false });
-                    saveTodos(todos);
-                    input.value = '';
+                const textInput = form.querySelector('input[type="text"]');
+                // --- ADDITION: Routine time input ---
+                const timeInput = section === 'routine' ? form.querySelector('input[type="time"]') : null;
+                // --- END ADDITION ---
+                const deadlineInput = form.querySelector('input[type="datetime-local"]');
+                const text = textInput.value.trim();
+                // --- ADDITION: Routine time value ---
+                const time = timeInput ? timeInput.value : null;
+                // --- END ADDITION ---
+                const deadline = deadlineInput.value;
+                if (!text) return;
+                // --- ADDITION: Store time for routine ---
+                if (section === 'routine') {
+                    todos[section].push({
+                        text,
+                        completed: false,
+                        time: time || null,
+                        deadline: deadline || null,
+                        notified: false
+                    });
+                } else {
+                    todos[section].push({
+                        text,
+                        completed: false,
+                        deadline: deadline || null,
+                        notified: false
+                    });
+                }
+                // --- END ADDITION ---
+                textInput.value = '';
+                if (timeInput) timeInput.value = '';
+                deadlineInput.value = '';
+                saveTodos();
+                renderSection(section);
+                updateProgress(section);
+            });
+        });
+
+        // Auto-reset logic for non-routine sections
+        function checkReset() {
+            const now = new Date();
+            ['daily','weekly','monthly','yearly'].forEach(section => {
+                const currentPeriod = getPeriodKey(section, now);
+                const storedPeriod = currentPeriods[section];
+                if (currentPeriod !== storedPeriod) {
+                    // Archive and reset
+                    archiveSection(section, storedPeriod);
+                    todos[section] = [];
+                    currentPeriods[section] = currentPeriod;
+                    savePeriods();
+                    saveTodos();
                     renderSection(section);
+                    updateProgress(section);
                 }
             });
         }
 
-        // Initial render/setup
-        sections.forEach(section => {
-            setupAddTask(section);
-            renderSection(section);
-        });
+        // On load
+        loadPeriods();
+        loadTodos();
+        renderAll();
+        checkReset();
+
+        // --- ADDITION: Start routine alarm interval after load ---
+        startRoutineAlarmInterval();
+        // --- END ADDITION ---
+
+        // Also check deadlines on page load
+        setTimeout(() => {
+            sections.forEach(section => {
+                // --- MODIFICATION: Skip routine for initial alarm ---
+                if (section === 'routine') return;
+                todos[section].forEach((todo, idx) => {
+                    if (!todo.completed && todo.deadline && isDue(todo.deadline) && !todo.notified) {
+                        todo.notified = true;
+                        saveTodos();
+                        renderSection(section);
+                        notify(section, idx);
+                    }
+                });
+            });
+        }, 500);
+
+        // ARCHIVE DROPDOWN LOGIC
+        function updateArchiveDatePicker() {
+            const section = document.getElementById('archive-section-picker').value;
+            const datePicker = document.getElementById('archive-date-picker');
+            // Remove all options except the first
+            while (datePicker.options.length > 1) datePicker.remove(1);
+            const periods = getAllArchivePeriods(section);
+            if (periods.length === 0) {
+                const opt = document.createElement('option');
+                opt.value = '';
+                opt.textContent = 'No archive found';
+                datePicker.appendChild(opt);
+            } else {
+                periods.forEach(period => {
+                    const opt = document.createElement('option');
+                    opt.value = period;
+                    // Format for display
+                    let label = period;
+                    if (section === 'daily') {
+                        label = period;
+                    } else if (section === 'weekly') {
+                        label = 'Week of ' + period;
+                    } else if (section === 'monthly') {
+                        const [y, m] = period.split('-');
+                        label = `${y}-${m}`;
+                    } else if (section === 'yearly') {
+                        label = period;
+                    } else if (section === 'routine') {
+                        label = period;
+                    }
+                    opt.textContent = label;
+                    datePicker.appendChild(opt);
+                });
+            }
+        }
+
+        document.getElementById('archive-section-picker').addEventListener('change', updateArchiveDatePicker);
+
+        // Show archive modal
+        function showArchiveModal(periodKey) {
+            const section = document.getElementById('archive-section-picker').value;
+            const modal = document.getElementById('archive-modal');
+            const backdrop = document.getElementById('archive-modal-backdrop');
+            const content = document.getElementById('archive-modal-content');
+            let archive = getArchive(section, periodKey);
+            let html = '';
+            html += `<div class="archive-section-title">${section.charAt(0).toUpperCase() + section.slice(1)} Tasks for <span style="color:var(--accent)">${periodKey}</span></div>`;
+            if (!archive || archive.length === 0) {
+                html += `<div class="archive-empty">No archived tasks for this period.</div>`;
+            } else {
+                html += `<ul class="archive-list">`;
+                archive.forEach(todo => {
+                    html += `<li>${todo.text}`;
+                    if (section === 'routine' && todo.time) {
+                        html += ` <span style="color:var(--muted);font-size:0.95em;">(${formatRoutineTime(todo.time)})</span>`;
+                    }
+                    if (todo.deadline) {
+                        html += ` <span style="color:var(--muted);font-size:0.95em;">(${formatDeadline(todo.deadline)})</span>`;
+                    }
+                    if (todo.completed) {
+                        html += ` <span style="color:var(--success);font-size:0.95em;">✔</span>`;
+                    }
+                    html += `</li>`;
+                });
+                html += `</ul>`;
+            }
+            content.innerHTML = html;
+            modal.classList.add('active');
+            backdrop.classList.add('active');
+        }
+
+        document.getElementById('archive-modal-close-btn').onclick = function() {
+            document.getElementById('archive-modal').classList.remove('active');
+            document.getElementById('archive-modal-backdrop').classList.remove('active');
+        };
+        document.getElementById('archive-modal-backdrop').onclick = function() {
+            document.getElementById('archive-modal').classList.remove('active');
+            document.getElementById('archive-modal-backdrop').classList.remove('active');
+        };
+
+        document.getElementById('archive-load-btn').onclick = function() {
+            const section = document.getElementById('archive-section-picker').value;
+            const datePicker = document.getElementById('archive-date-picker');
+            const periodKey = datePicker.value;
+            if (!periodKey || periodKey === '' || periodKey === 'No archive found') {
+                showToast('Please select a period.');
+                return;
+            }
+            showArchiveModal(periodKey);
+        };
+
+        // On load, set archive section and date picker
+        updateArchiveDatePicker();
+
     </script>
 </body>
 </html>
